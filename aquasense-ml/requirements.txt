@@ -1,8 +1,8 @@
 fastapi
 uvicorn
-scikit-learn
-pandas
+pydantic
+numpy
 joblib
 pymongo
-dnspython
 python-dotenv
+scikit-learn
