@@ -45,57 +45,125 @@ export default function Questionnaire() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!validate()) return;
 
-    localStorage.setItem('questionnaireData', JSON.stringify(form));
+  //   localStorage.setItem('questionnaireData', JSON.stringify(form));
 
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const userId = user?.id;
+  //   try {
+  //     const user = JSON.parse(localStorage.getItem('user'));
+  //     const userId = user?.id;
 
-      if (!userId) {
-        alert('User ID not found. Please login again.');
-        navigate('/login');
-        return;
-      }
+  //     if (!userId) {
+  //       alert('User ID not found. Please login again.');
+  //       navigate('/login');
+  //       return;
+  //     }
 
-      const response = await fetch('http://localhost:8000/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: userId,
-          people: Number(form.people),
-          children: Number(form.children),
-          temperature: Number(form.temperature),
-          showersPerDay: Number(form.showersPerDay),
-          timePerShower: Number(form.timePerShower),
-          washingPerWeek: Number(form.washingPerWeek),
-        }),
-      });
+  //     const response = await fetch('http://localhost:8000/predict', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({
+  //         userId: userId,
+  //         people: Number(form.people),
+  //         children: Number(form.children),
+  //         temperature: Number(form.temperature),
+  //         showersPerDay: Number(form.showersPerDay),
+  //         timePerShower: Number(form.timePerShower),
+  //         washingPerWeek: Number(form.washingPerWeek),
+  //       }),
+  //     });
 
-      const data = await response.json();
-      console.log('Predicted usage from ML API:', data.predicted_usage);
+  //     const data = await response.json();
+  //     console.log('Predicted usage from ML API:', data.predicted_usage);
 
-      const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/api/predictions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token
-        },
-        body: JSON.stringify({ predictedUsage: data.predicted_usage })
-      });
+  //     const token = localStorage.getItem('token');
+  //     await fetch('http://localhost:5000/api/predictions', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': token
+  //       },
+  //       body: JSON.stringify({ predictedUsage: data.predicted_usage })
+  //     });
 
-      localStorage.setItem('predictedUsage', data.predicted_usage); 
-    } catch (error) {
-      console.error('Prediction saving error:', error);
-      alert('Error generating prediction. Try again.');
+  //     localStorage.setItem('predictedUsage', data.predicted_usage); 
+  //   } catch (error) {
+  //     console.error('Prediction saving error:', error);
+  //     alert('Error generating prediction. Try again.');
+  //   }
+
+  //   navigate('/Dashboard1');
+  // };
+
+
+  const ML_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000/'
+    : process.env.REACT_APP_ML_URL || 'https://aqua-ml-service.onrender.com/';
+
+const BACKEND_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000/'
+    : process.env.REACT_APP_BACKEND_URL || 'https://aqua-ppr5.onrender.com/';
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
+
+  localStorage.setItem('questionnaireData', JSON.stringify(form));
+
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user?.id;
+
+    if (!userId) {
+      alert('User ID not found. Please login again.');
+      navigate('/login');
+      return;
     }
 
-    navigate('/Dashboard1');
-  };
+    // Call ML API
+    const response = await fetch(`${ML_URL}predict`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: userId,
+        people: Number(form.people),
+        children: Number(form.children),
+        temperature: Number(form.temperature),
+        showersPerDay: Number(form.showersPerDay),
+        timePerShower: Number(form.timePerShower),
+        washingPerWeek: Number(form.washingPerWeek),
+      }),
+    });
+
+    const data = await response.json();
+    console.log('Predicted usage from ML API:', data.predicted_usage);
+
+    const token = localStorage.getItem('token');
+
+    // Save prediction to backend
+    await fetch(`${BACKEND_URL}api/predictions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
+      body: JSON.stringify({ predictedUsage: data.predicted_usage }),
+    });
+
+    localStorage.setItem('predictedUsage', data.predicted_usage);
+  } catch (error) {
+    console.error('Prediction saving error:', error);
+    alert('Error generating prediction. Try again.');
+  }
+
+  navigate('/Dashboard1');
+};
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-6">

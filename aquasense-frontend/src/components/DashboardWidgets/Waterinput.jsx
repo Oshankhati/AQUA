@@ -55,7 +55,6 @@ export default function Waterinput({ onDailyTotalChange }) {
   return (
     <section
       className="bg-gradient-to-br from-white via-blue-50 to-indigo-100 p-6 rounded-2xl shadow-lg"
-      role="region"
       aria-label="Water Used Today Input"
     >
       <h2 className="text-2xl font-bold text-indigo-800 mb-4 tracking-wide">

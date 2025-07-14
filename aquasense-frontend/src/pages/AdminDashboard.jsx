@@ -5,23 +5,47 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await axios.get('http://localhost:5000/api/admin/users', {
-          headers: { Authorization: token },
-        });
-        setUsers(response.data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     const token = localStorage.getItem('token');
+  //     try {
+  //       const response = await axios.get('http://localhost:5000/api/admin/users', {
+  //         headers: { Authorization: token },
+  //       });
+  //       setUsers(response.data);
+  //     } catch (error) {
+  //       console.error('Error fetching users:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchUsers();
-  }, []);
+  //   fetchUsers();
+  // }, []);
+
+// Backend URL setup
+const BACKEND_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000/'
+    : process.env.REACT_APP_BACKEND_URL || 'https://aqua-ppr5.onrender.com/';
+
+useEffect(() => {
+  const fetchUsers = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get(`${BACKEND_URL}api/admin/users`, {
+        headers: { Authorization: token },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  fetchUsers();
+}, []);
 
   if (loading) {
     return (

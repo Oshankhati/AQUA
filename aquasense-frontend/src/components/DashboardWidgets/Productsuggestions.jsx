@@ -36,7 +36,7 @@ export default function ProductSuggestions() {
           >
             <img
               src={product.image}
-              alt={`Image of ${product.name}`}
+              alt={`${product.name}`}
               loading="lazy"
               className="h-48 w-full object-cover rounded-t-xl"
             />

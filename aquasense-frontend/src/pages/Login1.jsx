@@ -10,39 +10,80 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
 
-    if (!email || !password) {
-      alert('Please enter both email and password.');
-      return;
+  //   if (!email || !password) {
+  //     alert('Please enter both email and password.');
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+  //     const response = await axios.post('http://localhost:5000/api/login', {
+  //       email,
+  //       password,
+  //     });
+
+  //     if (response.status === 200) {
+  //       const { token, user } = response.data;
+  //       localStorage.setItem('token', token);
+  //       localStorage.setItem('user', JSON.stringify(user));
+  //       alert('Login successful!');
+  //       navigate('/questionnaire');
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     if (error.response?.data?.message) {
+  //       alert(`Error: ${error.response.data.message}`);
+  //     } else {
+  //       alert('Login failed. Please try again.');
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const BACKEND_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000/'
+    : process.env.REACT_APP_BACKEND_URL || 'https://aqua-ppr5.onrender.com/';
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+
+  if (!email || !password) {
+    alert('Please enter both email and password.');
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const response = await axios.post(`${BACKEND_URL}api/login`, {
+      email,
+      password,
+    });
+
+    if (response.status === 200) {
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      alert('Login successful!');
+      navigate('/questionnaire');
     }
-
-    try {
-      setLoading(true);
-      const response = await axios.post('http://localhost:5000/api/login', {
-        email,
-        password,
-      });
-
-      if (response.status === 200) {
-        const { token, user } = response.data;
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        alert('Login successful!');
-        navigate('/questionnaire');
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.response?.data?.message) {
-        alert(`Error: ${error.response.data.message}`);
-      } else {
-        alert('Login failed. Please try again.');
-      }
-    } finally {
-      setLoading(false);
+  } catch (error) {
+    console.error(error);
+    if (error.response?.data?.message) {
+      alert(`Error: ${error.response.data.message}`);
+    } else {
+      alert('Login failed. Please try again.');
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex bg-gray-900 text-white overflow-hidden">
@@ -118,20 +159,6 @@ export default function Login() {
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
 
-          {/* Divider */}
-          {/* <div className="text-center text-sm text-gray-400 animate-fadeIn delay-800">or continue with</div> */}
-
-          {/* Social Buttons */}
-          {/* <div className="flex space-x-4 animate-fadeIn delay-900">
-            <button type="button" className="w-full flex items-center justify-center border border-gray-600 py-2 rounded hover:bg-gray-800">
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5 mr-2" />
-              Google
-            </button>
-            <button type="button" className="w-full flex items-center justify-center border border-gray-600 py-2 rounded hover:bg-gray-800">
-              <img src="https://www.svgrepo.com/show/303128/apple-logo.svg" alt="Apple" className="w-5 h-5 mr-2" />
-              Apple
-            </button>
-          </div> */}
         </form>
       </div>
     </div>
