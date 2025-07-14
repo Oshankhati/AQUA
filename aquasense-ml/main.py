@@ -15,9 +15,21 @@ load_dotenv()
 app = FastAPI()
 
 # ✅ Enable CORS for frontend on http://localhost:3000
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:3000"],  # adjust if frontend URL differs
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # adjust if frontend URL differs
+    allow_origins=[
+        "http://localhost:3000",             # local frontend (dev)
+        "https://aqua-flax.vercel.app"       # deployed frontend (prod)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
