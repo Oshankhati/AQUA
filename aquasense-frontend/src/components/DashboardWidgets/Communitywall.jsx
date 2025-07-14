@@ -289,7 +289,7 @@ export default function Communitywall() {
       try {
         setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1000)); // simulate delay
-        const res = await axios.get(`${BACKEND_URL}/api/posts?page=${page}&limit=5`);
+        const res = await axios.get(`${BACKEND_URL}api/posts?page=${page}&limit=5`);
         setPosts(prev => {
           const newPosts = res.data.posts.filter(
             newPost => !prev.some(existing => existing._id === newPost._id)
@@ -343,7 +343,7 @@ export default function Communitywall() {
     formData.append('userId', currentUser?.id);
 
     try {
-      const res = await fetch(`${BACKEND_URL}/api/posts`, {
+      const res = await fetch(`${BACKEND_URL}api/posts`, {
         method: 'POST',
         body: formData,
       });
@@ -367,7 +367,7 @@ export default function Communitywall() {
 
   const handleLike = async (postId) => {
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/posts/${postId}/like`, {
+      const res = await axios.post(`${BACKEND_URL}api/posts/${postId}/like`, {
         userId: currentUser?.id,
       });
       setPosts(posts.map((p) => (p._id === postId ? res.data : p)));
@@ -382,7 +382,7 @@ export default function Communitywall() {
     if (!commentText) return;
 
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/posts/${postId}/comment`, {
+      const res = await axios.post(`${BACKEND_URL}api/posts/${postId}/comment`, {
         text: commentText,
         userId: currentUser?.id,
       });
@@ -395,7 +395,7 @@ export default function Communitywall() {
 
   const handleDeletePost = async (postId) => {
     try {
-      await axios.delete(`${BACKEND_URL}/api/posts/${postId}`);
+      await axios.delete(`${BACKEND_URL}api/posts/${postId}`);
       setPosts(posts.filter((p) => p._id !== postId));
     } catch (err) {
       console.error('Delete post error:', err);
@@ -404,7 +404,7 @@ export default function Communitywall() {
 
   const handleDeleteComment = async (postId, commentId) => {
     try {
-      const res = await axios.delete(`${BACKEND_URL}/api/posts/${postId}/comment/${commentId}`);
+      const res = await axios.delete(`${BACKEND_URL}api/posts/${postId}/comment/${commentId}`);
       setPosts(posts.map((p) => (p._id === postId ? res.data : p)));
     } catch (err) {
       console.error('Delete comment error:', err);
